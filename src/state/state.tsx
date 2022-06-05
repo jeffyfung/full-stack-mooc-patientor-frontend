@@ -32,4 +32,5 @@ export const StateProvider = ({
     </StateContext.Provider>
   );
 };
+
 export const useStateValue = () => useContext(StateContext);
