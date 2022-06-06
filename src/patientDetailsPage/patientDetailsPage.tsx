@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Patient } from '../types';
+import { Entry, Patient } from '../types';
 import { useStateValue } from '../state';
 
 import { Typography } from '@material-ui/core';
@@ -28,6 +28,20 @@ const PatientDetailsPage = () => {
           <br />
           occupation: {patient.occupation}
         </Typography>
+        <Typography variant='h5' style={{ marginTop: '0.5em' }}>
+          entries
+        </Typography>
+        {patient.entries.map((entry: Entry, idx: number) => (
+          <div key={idx}>
+            <Typography>
+              {entry.date} <span style={{ fontStyle: 'italic' }}>{entry.description}</span>
+            </Typography>
+            <ul>
+              {entry.diagnosisCodes &&
+                entry.diagnosisCodes.map((code, idx) => <li key={idx}>{code}</li>)}
+            </ul>
+          </div>
+        ))}
       </div>
     );
   }
