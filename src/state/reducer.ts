@@ -1,5 +1,6 @@
 import { State } from './state';
-import { Patient } from '../types';
+import { Patient, Diagnosis } from '../types';
+import _ from 'lodash';
 
 export type Action =
   | {
@@ -34,7 +35,19 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
-export const setPatientList = (payload: Patient[]): Action => {
+export const setPatientList = (patients: Patient[], diagnoses: Diagnosis[]): Action => {
+  const diagnosesDict: { [key: string]: string } = {};
+  diagnoses.forEach((d) => (diagnosesDict[d.code] = d.name));
+
+  const payload: Patient[] = _.cloneDeep(patients);
+  payload.forEach((p) => {
+    p.entries.forEach((entry) => {
+      if (entry.diagnosisCodes) {
+        entry.diagnosisCodes = entry.diagnosisCodes.map((code) => `${code} ${diagnosesDict[code]}`);
+      }
+    });
+  });
+
   return {
     type: 'SET_PATIENT_LIST',
     payload: payload,

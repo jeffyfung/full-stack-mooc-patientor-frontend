@@ -26,20 +26,24 @@ const PatientListPage = () => {
     setError(undefined);
   };
 
-  const submitNewPatient = async (values: PatientFormValues) => {
-    try {
-      const { data: newPatient } = await axios.post<Patient>(`${apiBaseUrl}/patients`, values);
-      void dispatch(addPatient(newPatient));
-      closeModal();
-    } catch (e: unknown) {
-      if (axios.isAxiosError(e)) {
-        console.error(e?.response?.data || 'Unrecognized axios error');
-        setError(String(e?.response?.data?.error) || 'Unrecognized axios error');
-      } else {
-        console.error('Unknown error', e);
-        setError('Unknown error');
+  const submitNewPatient = (values: PatientFormValues) => {
+    void (async (values: PatientFormValues) => {
+      try {
+        const { data: newPatient } = await axios.post<Patient>(`${apiBaseUrl}/patients`, values);
+        void dispatch(addPatient(newPatient));
+        closeModal();
+        return;
+      } catch (e: unknown) {
+        if (axios.isAxiosError(e)) {
+          console.error(e?.response?.data || 'Unrecognized axios error');
+          setError(String(e?.response?.data?.error) || 'Unrecognized axios error');
+        } else {
+          console.error('Unknown error', e);
+          setError('Unknown error');
+        }
+        return;
       }
-    }
+    })(values);
   };
 
   return (
