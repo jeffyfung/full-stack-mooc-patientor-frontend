@@ -29,6 +29,7 @@ export enum HealthCheckRating {
 
 export interface BaseEntry {
   id: string;
+  type: string;
   description: string;
   date: string;
   specialist: string;

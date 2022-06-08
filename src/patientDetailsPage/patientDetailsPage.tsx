@@ -5,6 +5,7 @@ import { useStateValue } from '../state';
 import { Typography } from '@material-ui/core';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
+import EntryDetails from './entryDetail/entryDetails';
 
 const PatientDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,15 +33,7 @@ const PatientDetailsPage = () => {
           entries
         </Typography>
         {patient.entries.map((entry: Entry, idx: number) => (
-          <div key={idx}>
-            <Typography>
-              {entry.date} <span style={{ fontStyle: 'italic' }}>{entry.description}</span>
-            </Typography>
-            <ul>
-              {entry.diagnosisCodes &&
-                entry.diagnosisCodes.map((code, idx) => <li key={idx}>{code}</li>)}
-            </ul>
-          </div>
+          <EntryDetails key={idx} entry={entry} />
         ))}
       </div>
     );
