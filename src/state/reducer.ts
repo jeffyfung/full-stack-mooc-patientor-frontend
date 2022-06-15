@@ -1,6 +1,5 @@
 import { State } from './state';
 import { Patient, Diagnosis } from '../types';
-import _ from 'lodash';
 
 export type Action =
   | {
@@ -10,6 +9,10 @@ export type Action =
   | {
       type: 'ADD_PATIENT';
       payload: Patient;
+    }
+  | {
+      type: 'SET_DIAGNOSES';
+      payload: { [key: string]: Diagnosis };
     };
 
 export const reducer = (state: State, action: Action): State => {
@@ -30,24 +33,26 @@ export const reducer = (state: State, action: Action): State => {
           [action.payload.id]: action.payload,
         },
       };
+    case 'SET_DIAGNOSES':
+      return {
+        ...state,
+        diagnoses: action.payload,
+      };
     default:
       return state;
   }
 };
 
-export const setPatientList = (patients: Patient[], diagnoses: Diagnosis[]): Action => {
-  const diagnosesDict: { [key: string]: string } = {};
-  diagnoses.forEach((d) => (diagnosesDict[d.code] = d.name));
+export const setDiagnoses = (diagnoses: Diagnosis[]): Action => {
+  const payload: { [key: string]: Diagnosis } = {};
+  diagnoses.forEach((d) => (payload[d.code] = d));
+  return {
+    type: 'SET_DIAGNOSES',
+    payload: payload,
+  };
+};
 
-  const payload: Patient[] = _.cloneDeep(patients);
-  payload.forEach((p) => {
-    p.entries.forEach((entry) => {
-      if (entry.diagnosisCodes) {
-        entry.diagnosisCodes = entry.diagnosisCodes.map((code) => `${code} ${diagnosesDict[code]}`);
-      }
-    });
-  });
-
+export const setPatientList = (payload: Patient[]): Action => {
   return {
     type: 'SET_PATIENT_LIST',
     payload: payload,

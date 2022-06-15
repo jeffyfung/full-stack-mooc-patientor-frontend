@@ -1,4 +1,4 @@
-import { Entry, HealthCheckRating } from '../../types';
+import { Diagnosis, Entry, HealthCheckRating } from '../../types';
 import { Typography } from '@material-ui/core';
 import MedicalServicesRoundedIcon from '@mui/icons-material/MedicalServicesRounded';
 import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
@@ -29,7 +29,13 @@ const healthCheckRating = (rating: HealthCheckRating) => {
   return <CircleRoundedIcon style={ratingStyle} />;
 };
 
-const EntryDetails = ({ entry }: { entry: Entry }) => {
+const EntryDetails = ({
+  entry,
+  diagnoses,
+}: {
+  entry: Entry;
+  diagnoses: { [key: string]: Diagnosis };
+}) => {
   const styles: { [key: string]: React.CSSProperties } = {
     container: { border: 'black solid 1px', margin: '5px 0px', padding: 5 },
     typeIcon: { position: 'relative', top: 6 },
@@ -50,7 +56,11 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
           </Typography>
           <ul>
             {entry.diagnosisCodes &&
-              entry.diagnosisCodes.map((code, idx) => <li key={idx}>{code}</li>)}
+              entry.diagnosisCodes.map((code, idx) => (
+                <li key={idx}>
+                  {code} {diagnoses[code]?.name}
+                </li>
+              ))}
           </ul>
         </div>
       );
@@ -66,7 +76,11 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
           </Typography>
           <ul>
             {entry.diagnosisCodes &&
-              entry.diagnosisCodes.map((code, idx) => <li key={idx}>{code}</li>)}
+              entry.diagnosisCodes.map((code, idx) => (
+                <li key={idx}>
+                  {code} {diagnoses[code]?.name}
+                </li>
+              ))}
           </ul>
         </div>
       );
@@ -82,7 +96,11 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
           </Typography>
           <ul>
             {entry.diagnosisCodes &&
-              entry.diagnosisCodes.map((code, idx) => <li key={idx}>{code}</li>)}
+              entry.diagnosisCodes.map((code, idx) => (
+                <li key={idx}>
+                  {code} {diagnoses[code]?.name}
+                </li>
+              ))}
           </ul>
         </div>
       );

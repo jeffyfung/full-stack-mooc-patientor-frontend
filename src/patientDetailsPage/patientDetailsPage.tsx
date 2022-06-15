@@ -1,15 +1,49 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Entry, Patient } from '../types';
-import { useStateValue } from '../state';
+import { addPatient, useStateValue } from '../state';
 
-import { Typography } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import EntryDetails from './entryDetail/entryDetails';
+import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
+import AddEntryModal from '../AddEntryModal';
+import axios from 'axios';
+import { apiBaseUrl } from '../constants';
 
 const PatientDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [{ patients }] = useStateValue();
+  const [{ patients, diagnoses }, dispatch] = useStateValue();
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string | undefined>();
+
+  const openModal = (): void => setModalOpen(true);
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
+  const submitNewEntry = (values: EntryFormValues) => {
+    void (async (values: EntryFormValues) => {
+      try {
+        const url = `${apiBaseUrl}/patients/${id}/entries`;
+        const { data: updatedPatient } = await axios.post<Patient>(url, values);
+        void dispatch(addPatient(updatedPatient));
+        closeModal();
+      } catch (e: unknown) {
+        if (axios.isAxiosError(e)) {
+          console.error(e?.response?.data || 'Unrecognized axios error');
+          setError(String(e?.response?.data?.error) || 'Unrecognized axios error');
+        } else {
+          console.error('Unknown error', e);
+          setError('Unknown error');
+        }
+        return;
+      }
+    })(values);
+  };
 
   if (!id) {
     throw new Error('id is undefined');
@@ -17,7 +51,7 @@ const PatientDetailsPage = () => {
 
   const patient: Patient | undefined = patients[id];
 
-  if (patient) {
+  if (patient && diagnoses) {
     return (
       <div>
         <Typography variant='h4' style={{ marginTop: '0.5em', marginBottom: '0.1em' }}>
@@ -33,8 +67,17 @@ const PatientDetailsPage = () => {
           entries
         </Typography>
         {patient.entries.map((entry: Entry, idx: number) => (
-          <EntryDetails key={idx} entry={entry} />
+          <EntryDetails key={idx} entry={entry} diagnoses={diagnoses} />
         ))}
+        <AddEntryModal
+          modalOpen={modalOpen}
+          onSubmit={submitNewEntry}
+          error={error}
+          onClose={closeModal}
+        />
+        <Button variant='contained' style={{ margin: '5px 0px' }} onClick={() => openModal()}>
+          Add New Entry
+        </Button>
       </div>
     );
   }

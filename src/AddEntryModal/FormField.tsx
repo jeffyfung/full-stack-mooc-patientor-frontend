@@ -7,21 +7,21 @@ import {
   TextField as TextFieldMUI,
   Typography,
 } from '@material-ui/core';
-import { Diagnosis, Gender } from '../types';
+import { Diagnosis } from '../types';
 import { InputLabel } from '@material-ui/core';
 import Input from '@material-ui/core/Input';
 
 // structure of a single option
-export type GenderOption = {
-  value: Gender;
-  label: string;
+export type HealthCheckRatingOption = {
+  label?: number;
+  value: number;
 };
 
 // props for select field component
 type SelectFieldProps = {
   name: string;
   label: string;
-  options: GenderOption[];
+  options: HealthCheckRatingOption[];
 };
 
 const FormikSelect = ({ field, ...props }: FieldProps) => <Select {...field} {...props} />;
@@ -62,39 +62,6 @@ export const TextField = ({ field, label, placeholder }: TextProps) => (
 /*
   for exercises 9.24.-
 */
-export interface NumberProps extends FieldProps {
-  label: string;
-  min: number;
-  max: number;
-}
-
-export const NumberField = ({ field, label, min, max }: NumberProps) => {
-  const [value, setValue] = useState<number>(min);
-  console.log('logging value of NumberField', value);
-
-  return (
-    <div style={{ marginBottom: '1em' }}>
-      <TextFieldMUI
-        fullWidth
-        label={label}
-        placeholder={String(min)}
-        type='number'
-        {...field}
-        value={value}
-        onChange={(e) => {
-          const value = parseInt(e.target.value);
-          if (value === undefined) return;
-          if (value > max) setValue(max);
-          else if (value <= min) setValue(min);
-          else setValue(Math.floor(value));
-        }}
-      />
-      <Typography variant='subtitle2' style={{ color: 'red' }}>
-        <ErrorMessage name={field.name} />
-      </Typography>
-    </div>
-  );
-};
 
 export const DiagnosisSelection = ({
   diagnoses,
