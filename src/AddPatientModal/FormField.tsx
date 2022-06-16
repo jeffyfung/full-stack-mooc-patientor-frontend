@@ -62,15 +62,14 @@ export const TextField = ({ field, label, placeholder }: TextProps) => (
 /*
   for exercises 9.24.-
 */
-export interface NumberProps extends FieldProps {
+interface NumberProps extends FieldProps {
   label: string;
   min: number;
   max: number;
 }
 
 export const NumberField = ({ field, label, min, max }: NumberProps) => {
-  const [value, setValue] = useState<number>(min);
-  console.log('logging value of NumberField', value);
+  const [value, setValue] = useState<number>();
 
   return (
     <div style={{ marginBottom: '1em' }}>
