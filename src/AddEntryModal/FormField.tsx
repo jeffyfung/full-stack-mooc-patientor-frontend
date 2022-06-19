@@ -12,16 +12,16 @@ import { InputLabel } from '@material-ui/core';
 import Input from '@material-ui/core/Input';
 
 // structure of a single option
-export type HealthCheckRatingOption = {
-  label?: number;
-  value: number;
+export type SelectOption = {
+  label?: number | string;
+  value: number | string;
 };
 
 // props for select field component
 type SelectFieldProps = {
   name: string;
   label: string;
-  options: HealthCheckRatingOption[];
+  options: SelectOption[];
 };
 
 const FormikSelect = ({ field, ...props }: FieldProps) => <Select {...field} {...props} />;
@@ -50,14 +50,16 @@ interface TextProps extends FieldProps {
   placeholder: string;
 }
 
-export const TextField = ({ field, label, placeholder }: TextProps) => (
-  <div style={{ marginBottom: '1em' }}>
-    <TextFieldMUI fullWidth label={label} placeholder={placeholder} {...field} />
-    <Typography variant='subtitle2' style={{ color: 'red' }}>
-      <ErrorMessage name={field.name} />
-    </Typography>
-  </div>
-);
+export const TextField = ({ field, label, placeholder }: TextProps) => {
+  return (
+    <div style={{ marginBottom: '1em' }}>
+      <TextFieldMUI fullWidth label={label} placeholder={placeholder} {...field} />
+      <Typography variant='subtitle2' style={{ color: 'red' }}>
+        <ErrorMessage name={field.name} />
+      </Typography>
+    </div>
+  );
+};
 
 /*
   for exercises 9.24.-
@@ -77,7 +79,7 @@ export const DiagnosisSelection = ({
   const onChange = (data: string[]) => {
     setDiagnoses([...data]);
     setFieldTouched(field, true);
-    setFieldValue(field, selectedDiagnoses);
+    setFieldValue(field, [...data]);
   };
 
   const stateOptions = diagnoses.map((diagnosis) => ({

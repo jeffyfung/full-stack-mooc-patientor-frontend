@@ -27,9 +27,13 @@ export enum HealthCheckRating {
   'CriticalRisk' = 3,
 }
 
+export const entryTypes = ['HealthCheck', 'OccupationalHealthcare', 'Hospital'] as const;
+
+export type EntryType = typeof entryTypes[number];
+
 export interface BaseEntry {
   id: string;
-  type: string;
+  type: EntryType;
   description: string;
   date: string;
   specialist: string;
@@ -41,17 +45,16 @@ export interface HealthCheckEntry extends BaseEntry {
   healthCheckRating: HealthCheckRating;
 }
 
-interface OccupationalHealthcareEntry extends BaseEntry {
+export interface OccupationalHealthcareEntry extends BaseEntry {
   type: 'OccupationalHealthcare';
   employerName: string;
-  description: string;
   sickLeave?: {
     startDate: string;
     endDate: string;
   };
 }
 
-interface HospitalEntry extends BaseEntry {
+export interface HospitalEntry extends BaseEntry {
   type: 'Hospital';
   description: string;
   discharge: {
@@ -61,3 +64,7 @@ interface HospitalEntry extends BaseEntry {
 }
 
 export type Entry = HealthCheckEntry | OccupationalHealthcareEntry | HospitalEntry;
+
+export type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
+
+export type DistributiveIntersect<T, K> = T extends any ? T & K : never;

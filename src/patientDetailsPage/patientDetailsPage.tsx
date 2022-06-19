@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Entry, Patient } from '../types';
+import { Entry, Patient, OccupationalHealthcareEntry, DistributiveOmit } from '../types';
 import { addPatient, useStateValue } from '../state';
 
 import { Button, Typography } from '@material-ui/core';
@@ -11,6 +11,9 @@ import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
 import AddEntryModal from '../AddEntryModal';
 import axios from 'axios';
 import { apiBaseUrl } from '../constants';
+import _ from 'lodash';
+
+type EntrySubmissionValues = DistributiveOmit<Entry, 'id'>;
 
 const PatientDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,11 +28,31 @@ const PatientDetailsPage = () => {
     setError(undefined);
   };
 
+  const intercept = (values: EntryFormValues): EntrySubmissionValues => {
+    if (
+      values.type === 'OccupationalHealthcare' &&
+      values.sickLeaveStartDate &&
+      values.sickLeaveEndDate
+    ) {
+      const rtn = _.cloneDeep(values) as Omit<OccupationalHealthcareEntry, 'id'>;
+      rtn.sickLeave = {
+        startDate: values.sickLeaveStartDate,
+        endDate: values.sickLeaveEndDate,
+      };
+      return rtn;
+    } else {
+      return values as EntrySubmissionValues;
+    }
+  };
+
   const submitNewEntry = (values: EntryFormValues) => {
+    console.log('diagnosis codes');
+    console.log(values.diagnosisCodes);
     void (async (values: EntryFormValues) => {
       try {
         const url = `${apiBaseUrl}/patients/${id}/entries`;
-        const { data: updatedPatient } = await axios.post<Patient>(url, values);
+        const processedValues = intercept(values);
+        const { data: updatedPatient } = await axios.post<Patient>(url, processedValues);
         void dispatch(addPatient(updatedPatient));
         closeModal();
       } catch (e: unknown) {

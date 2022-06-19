@@ -72,6 +72,9 @@ const EntryDetails = ({
             <br />
             <span style={{ fontStyle: 'italic' }}>{entry.description}</span>
             <br />
+            {entry.sickLeave?.startDate &&
+              `${entry.sickLeave.startDate} to ${entry.sickLeave.endDate}`}
+            <br />
             diagnose by {entry.specialist}
           </Typography>
           <ul>
