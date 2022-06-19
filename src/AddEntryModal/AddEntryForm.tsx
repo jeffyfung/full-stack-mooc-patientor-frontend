@@ -8,6 +8,8 @@ interface _Types {
   type: EntryType;
   sickLeaveStartDate: string;
   sickLeaveEndDate: string;
+  dischargeDate: string;
+  dischargeCriteria: string;
 }
 export type EntryFormValues = Omit<HealthCheckEntry, 'id' | 'type'> &
   Omit<OccupationalHealthcareEntry, 'id' | 'type'> &
@@ -42,8 +44,6 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
     setFieldTouched: any,
     values: EntryFormValues
   ) => {
-    console.log('renderEntryForm');
-    console.log(isValid);
     return (
       <div>
         <Form className='form ui'>
@@ -109,6 +109,8 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
         return renderHealthCheckFields();
       case 'OccupationalHealthcare':
         return renderOccupationalHealthcareFields();
+      case 'Hospital':
+        return renderHospitalFields();
       default:
         throw new Error('Incorrect value for .type');
     }
@@ -147,6 +149,23 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
     </>
   );
 
+  const renderHospitalFields = () => (
+    <>
+      <Field
+        label='Discharge Date'
+        placeholder='YYYY-MM-DD'
+        name='dischargeDate'
+        component={TextField}
+      />
+      <Field
+        label='Discharge Criteria'
+        placeholder='YYYY-MM-DD'
+        name='dischargeCriteria'
+        component={TextField}
+      />
+    </>
+  );
+
   return (
     <Formik
       initialValues={{
@@ -160,6 +179,8 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
         sickLeaveStartDate: '',
         sickLeaveEndDate: '',
         discharge: { date: '', criteria: '' },
+        dischargeDate: '',
+        dischargeCriteria: '',
       }}
       onSubmit={onSubmit}
       validate={(values) => {
@@ -193,6 +214,16 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
               const err = 'Enter both start and end date of sick leave period';
               errors.sickLeaveStartDate = err;
               errors.sickLeaveEndDate = err;
+            }
+            break;
+          case 'Hospital':
+            if (!values.dischargeCriteria) {
+              errors.dischargeCriteria = requiredError;
+            }
+            if (!values.dischargeDate) {
+              errors.dischargeDate = requiredError;
+            } else if (!/^\d{4}-\d{2}-\d{2}$/.test(values.dischargeDate)) {
+              errors.dischargeDate = 'Date format should be YYYY-MM-DD';
             }
             break;
           default:

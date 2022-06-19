@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Entry, Patient, OccupationalHealthcareEntry, DistributiveOmit } from '../types';
+import {
+  Entry,
+  Patient,
+  OccupationalHealthcareEntry,
+  DistributiveOmit,
+  HospitalEntry,
+} from '../types';
 import { addPatient, useStateValue } from '../state';
 
 import { Button, Typography } from '@material-ui/core';
@@ -29,25 +35,44 @@ const PatientDetailsPage = () => {
   };
 
   const intercept = (values: EntryFormValues): EntrySubmissionValues => {
-    if (
-      values.type === 'OccupationalHealthcare' &&
-      values.sickLeaveStartDate &&
-      values.sickLeaveEndDate
-    ) {
-      const rtn = _.cloneDeep(values) as Omit<OccupationalHealthcareEntry, 'id'>;
-      rtn.sickLeave = {
-        startDate: values.sickLeaveStartDate,
-        endDate: values.sickLeaveEndDate,
-      };
-      return rtn;
-    } else {
-      return values as EntrySubmissionValues;
+    switch (values.type) {
+      case 'OccupationalHealthcare':
+        if (values.sickLeaveStartDate && values.sickLeaveEndDate) {
+          const rtn = _.cloneDeep(values) as Omit<OccupationalHealthcareEntry, 'id'>;
+          rtn.sickLeave = {
+            startDate: values.sickLeaveStartDate,
+            endDate: values.sickLeaveEndDate,
+          };
+          return rtn;
+        }
+        return values as EntrySubmissionValues;
+      case 'Hospital':
+        const rtn = _.cloneDeep(values) as Omit<HospitalEntry, 'id'>;
+        rtn.discharge = {
+          date: values.dischargeDate,
+          criteria: values.dischargeCriteria,
+        };
+        return rtn;
+      default:
+        return values as EntrySubmissionValues;
     }
+    // if (
+    //   values.type === 'OccupationalHealthcare' &&
+    //   values.sickLeaveStartDate &&
+    //   values.sickLeaveEndDate
+    // ) {
+    //   const rtn = _.cloneDeep(values) as Omit<OccupationalHealthcareEntry, 'id'>;
+    //   rtn.sickLeave = {
+    //     startDate: values.sickLeaveStartDate,
+    //     endDate: values.sickLeaveEndDate,
+    //   };
+    //   return rtn;
+    // } else {
+    //   return values as EntrySubmissionValues;
+    // }
   };
 
   const submitNewEntry = (values: EntryFormValues) => {
-    console.log('diagnosis codes');
-    console.log(values.diagnosisCodes);
     void (async (values: EntryFormValues) => {
       try {
         const url = `${apiBaseUrl}/patients/${id}/entries`;

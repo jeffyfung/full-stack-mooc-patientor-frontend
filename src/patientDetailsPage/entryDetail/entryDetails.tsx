@@ -95,6 +95,7 @@ const EntryDetails = ({
             {entry.type}
             <br />
             <span style={{ fontStyle: 'italic' }}>{entry.description}</span>
+            <br />
             diagnose by {entry.specialist}
           </Typography>
           <ul>
